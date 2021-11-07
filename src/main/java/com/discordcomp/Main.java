@@ -142,11 +142,13 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                     //System.out.println(contents[0]+" "+contents[1]+" "+contents[2]+" "+contents[3]);
                     for(int i=0;i<contents.length;i++){
                         if(contents[i].equals("<name>")){
-                            name=contents[++i];
+                            if(++i<contents.length)
+                            name=contents[i];
                             continue;
                         }
                         if(contents[i].equals("<message>")){
-                            message=contents[++i];
+                            if(++i<contents.length)
+                            message=contents[i];
                             continue;
                         }
                     }

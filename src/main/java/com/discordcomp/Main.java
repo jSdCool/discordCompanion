@@ -157,8 +157,8 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                             return;
                         }
                         String playersOut="";
-                        for(int i=0;i<players.size();i++){
-                            playersOut+=players.get(i).getName().asString()+" \\\\n";
+                        for (ServerPlayerEntity player : players) {
+                            playersOut += player.getName().asString() + " \\\\n";
                         }
                         sendMessage(playersOut);
                         return;

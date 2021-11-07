@@ -14,17 +14,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Scanner;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class Main implements ModInitializer, ServerTickEvents.EndTick{
     public static final Logger LOGGER = LogManager.getLogger("discord companion");
-    static String ip="localhost";
-    static int port=15643;
+    static String ip;
+    static int port;
     static Socket companionConnection;
     static DataOutputStream dos;
     static BufferedReader br;
@@ -51,6 +51,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                             System.out.println("reconnecting to companion");
                             if(connectToCompanion()) {
                                 context.getSource().sendFeedback(new LiteralText("connected"), true);
+                                connected=true;
                             }else{
                                 context.getSource().sendError(new LiteralText("connection failed"));
                             }
@@ -75,6 +76,42 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
     static PlayerManager pm;
 
     boolean connectToCompanion() {
+        File config;
+        Scanner cfs;
+        try {
+            config = new File("config\\discorncompanion.cfg");
+            cfs = new Scanner(config);
+        }catch(Throwable e){
+            try {
+                FileWriter mr = new FileWriter("config\\discorncompanion.cfg");
+                mr.write("#companion ip=\n#companion port=15643");
+                mr.close();
+                System.out.println("config file created.");
+
+            } catch (IOException ee) {
+                System.out.println("\n\n\nAn error occurred while creating config file. you may need to make the config folder if it does not already exist\n\n\n");
+                ee.printStackTrace();
+                connected=false;
+                return false;
+            }
+            connected =false;
+            System.out.println("\n\n\nconfig file created. populate the fields and then restart this server.\n\n\n");
+            return false;
+        }
+        while (cfs.hasNextLine()) {
+            String line=cfs.nextLine();
+            if(line.indexOf("#")==0){
+                String pt1=line.substring(1,line.indexOf("="));
+                String data=line.substring(line.indexOf("=")+1);
+                if(pt1.equals("companion ip")){
+                    ip=data;
+                }
+                if(pt1.equals("companion port")){
+                    port=Integer.parseInt(data);
+                }
+
+            }
+        }
         try{
             companionConnection =new Socket(ip, port);
             dos = new DataOutputStream(companionConnection.getOutputStream());
@@ -127,15 +164,20 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
     }
 
     public static void sendMessage(String message){
+        if(connected)
         try {
-            //System.out.println(message);
+
             dos.writeBytes("<message>§"+message+"\n");
+        }catch (SocketException e){
+            connected=false;
+            Main.pm.broadcastChatMessage(new LiteralText("§4disconnected from discord"), MessageType.SYSTEM, Util.NIL_UUID);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void sendInfo(String message){
+        if(connected)
         try {
             //System.out.println(message);
             dos.writeBytes("<info>§"+message+"\n");

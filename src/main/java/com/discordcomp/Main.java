@@ -8,15 +8,17 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.security.auth.login.LoginException;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 import java.util.Scanner;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -148,7 +150,19 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                             continue;
                         }
                     }
-                    //System.out.println(message);
+                    if(message.equals("/list")){
+                        List<ServerPlayerEntity> players = pm.getPlayerList();
+                        if(players.size()==0){
+                            sendMessage("there are no players online");
+                            return;
+                        }
+                        String playersOut="";
+                        for(int i=0;i<players.size();i++){
+                            playersOut+=players.get(i).getName().asString()+" \\\\n";
+                        }
+                        sendMessage(playersOut);
+                        return;
+                    }
                     Main.pm.broadcastChatMessage(new LiteralText("§9Discord §r["+name+"] "+message), MessageType.SYSTEM, Util.NIL_UUID);
                 }
 

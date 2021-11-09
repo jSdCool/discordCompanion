@@ -152,7 +152,14 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                             continue;
                         }
                     }
-                    if(message.equals("/list")){
+                    System.out.println(message);
+                    String []chunks=message.split("\\\\n");
+                    String ready="";
+                    for(int i=0;i< chunks.length;i++){
+                        ready+=chunks[i]+"\n";
+                    }
+                    ready=ready.substring(0,ready.length()-1);
+                    if(ready.equals("/list")){
                         List<ServerPlayerEntity> players = pm.getPlayerList();
                         if(players.size()==0){
                             sendMessage("there are no players online");
@@ -165,7 +172,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                         sendMessage(playersOut);
                         return;
                     }
-                    Main.pm.broadcastChatMessage(new LiteralText("§9Discord §r["+name+"] "+message), MessageType.SYSTEM, Util.NIL_UUID);
+                    Main.pm.broadcastChatMessage(new LiteralText("§9Discord §r["+name+"] "+ready), MessageType.SYSTEM, Util.NIL_UUID);
                 }
 
 

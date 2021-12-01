@@ -172,7 +172,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                         sendMessage(playersOut);
                         return;
                     }
-                    Main.pm.broadcastChatMessage(new LiteralText("§9Discord §r["+name+"] "+ready), MessageType.SYSTEM, Util.NIL_UUID);
+                    Main.pm.broadcast(new LiteralText("§9Discord §r["+name+"] "+ready), MessageType.SYSTEM, Util.NIL_UUID);
                 }
 
 
@@ -193,7 +193,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
             dos.writeBytes("<message>§"+message+"\n");
         }catch (SocketException e){
             connected=false;
-            Main.pm.broadcastChatMessage(new LiteralText("§4disconnected from discord"), MessageType.SYSTEM, Util.NIL_UUID);
+            Main.pm.broadcast(new LiteralText("§4disconnected from discord"), MessageType.SYSTEM, Util.NIL_UUID);
         } catch (IOException e) {
             e.printStackTrace();
         }

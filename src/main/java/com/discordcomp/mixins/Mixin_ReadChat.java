@@ -17,7 +17,7 @@ import java.util.UUID;
 @Mixin(PlayerManager.class)
 public class Mixin_ReadChat {
 
-   @Inject(method = "broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V",at =@At("HEAD"),remap = true )
+   @Inject(method = "broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V",at =@At("HEAD"),remap = true )
     private void broadcastChatMessage(Text text, MessageType tp, UUID uid, CallbackInfo info){
        //System.out.println("detected by mixin");
 

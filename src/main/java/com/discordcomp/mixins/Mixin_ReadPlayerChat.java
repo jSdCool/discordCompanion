@@ -17,7 +17,7 @@ public class Mixin_ReadPlayerChat {
 
 
 
-    @Inject(method = "onGameMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V",at =@At("HEAD"),remap = true )
+    @Inject(method = "onChatMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;)V",at =@At("HEAD"),remap = true )
     private void onGameMessage(ChatMessageC2SPacket packet, CallbackInfo ci){
         //System.out.println("detected by mixin2");
         if(packet.getChatMessage().substring(0,1).equals("/")){

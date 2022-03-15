@@ -9,7 +9,7 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.*;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -172,7 +172,14 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                         sendMessage(playersOut);
                         return;
                     }
-                    Main.pm.broadcast(new LiteralText("§9Discord §r["+name+"] "+ready), MessageType.SYSTEM, Util.NIL_UUID);
+                    BaseText chatMessage=new LiteralText(""),discordText =new LiteralText("Discord ");
+                    discordText.setStyle(chatMessage.getStyle().withColor(5592575));
+                    chatMessage.append(discordText);
+                    BaseText discordName=new LiteralText("["+name+"] ");
+                    discordName.setStyle(discordName.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new LiteralText("hover baby"))).withColor(16777215));
+                    chatMessage.append(discordName);
+                    chatMessage.append(ready);
+                    Main.pm.broadcast(chatMessage, MessageType.SYSTEM, Util.NIL_UUID);//new LiteralText("§9Discord §r["+name+"] "+ready)
                 }
 
 

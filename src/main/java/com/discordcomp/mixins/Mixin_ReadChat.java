@@ -21,7 +21,7 @@ public class Mixin_ReadChat {
     private void broadcastChatMessage(Text text, MessageType tp, UUID uid, CallbackInfo info){
        //System.out.println("detected by mixin");
 
-           if (text.getString().length() > 12 && text.getString().substring(0, 12).equals("§9Discord §r"))
+           if (text.getString().length() > 9 && text.getString().substring(0, 9).equals("Discord ["))
                return;
             //System.out.println("sending");
        Main.sendMessage(text.getString());

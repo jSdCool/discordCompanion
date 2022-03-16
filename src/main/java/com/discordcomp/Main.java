@@ -20,6 +20,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
+
+import net.jsdcool.discompnet.*;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -27,10 +30,12 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
     public static final Logger LOGGER = LogManager.getLogger("discord companion");
     static String ip;
     static int port;
-    static Socket companionConnection;
-    static DataOutputStream dos;
-    static BufferedReader br;
-    static boolean connected = false;
+    public static Socket companionConnection;
+    public static ObjectOutputStream output;
+    public static ObjectInputStream input;
+    public static CompanionData dataToSendToCompanion;
+    public static boolean connected = false;
+    static CompanionConnection connection;
 
     @Override
     public void onInitialize() {
@@ -72,6 +77,8 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
             pm = ms.getPlayerManager();
 
         });
+
+        CompanionData d= new CompanionData();
     }
 
     static MinecraftServer ms;
@@ -114,10 +121,14 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
 
             }
         }
+        //the part where it actually connects to the companion
         try{
             companionConnection =new Socket(ip, port);
-            dos = new DataOutputStream(companionConnection.getOutputStream());
-            br = new BufferedReader(new InputStreamReader(companionConnection.getInputStream()));
+            output=new ObjectOutputStream(companionConnection.getOutputStream());
+            input=new ObjectInputStream(companionConnection.getInputStream());
+            dataToSendToCompanion=new CompanionData();
+            connection=new CompanionConnection();
+            connection.start();
             return true;
         }catch(Throwable e){
         e.printStackTrace();
@@ -130,89 +141,27 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
     public void onEndTick(MinecraftServer server) {
 
         if(connected) {
-            try {
-                String str1 = null;
-                if (br.ready())
-                    str1 = br.readLine();
-
-                if (str1 != null) {
-                    //LOGGER.info(str1);
-                    String[] contents=str1.split("\\\\`");
-                    String message="",name="";
-                    //System.out.println(contents[0]+" "+contents[1]+" "+contents[2]+" "+contents[3]);
-                    for(int i=0;i<contents.length;i++){
-                        if(contents[i].equals("<name>")){
-                            if(++i<contents.length)
-                            name=contents[i];
-                            continue;
-                        }
-                        if(contents[i].equals("<message>")){
-                            if(++i<contents.length)
-                            message=contents[i];
-                            continue;
-                        }
-                    }
-                    System.out.println(message);
-                    String []chunks=message.split("\\\\n");
-                    String ready="";
-                    for(int i=0;i< chunks.length;i++){
-                        ready+=chunks[i]+"\n";
-                    }
-                    ready=ready.substring(0,ready.length()-1);
-                    if(ready.equals("/list")){
-                        List<ServerPlayerEntity> players = pm.getPlayerList();
-                        if(players.size()==0){
-                            sendMessage("there are no players online");
-                            return;
-                        }
-                        String playersOut="";
-                        for (ServerPlayerEntity player : players) {
-                            playersOut += player.getName().asString() + " \\\\n";
-                        }
-                        sendMessage(playersOut);
-                        return;
-                    }
-                    BaseText chatMessage=new LiteralText(""),discordText =new LiteralText("Discord ");
-                    discordText.setStyle(chatMessage.getStyle().withColor(5592575));
-                    chatMessage.append(discordText);
-                    BaseText discordName=new LiteralText("["+name+"] ");
-                    discordName.setStyle(discordName.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new LiteralText("hover baby"))).withColor(16777215));
-                    chatMessage.append(discordName);
-                    chatMessage.append(ready);
-                    Main.pm.broadcast(chatMessage, MessageType.SYSTEM, Util.NIL_UUID);//new LiteralText("§9Discord §r["+name+"] "+ready)
-                }
-
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(!connection.isAlive()){
+                connected=false;
+                try{
+                    companionConnection.close();
+                }catch (IOException i){ }
             }
-
-
         }
 
     }
 
     public static void sendMessage(String message){
-        if(connected)
-        try {
-
-            dos.writeBytes("<message>§"+message+"\n");
-        }catch (SocketException e){
-            connected=false;
-            Main.pm.broadcast(new LiteralText("§4disconnected from discord"), MessageType.SYSTEM, Util.NIL_UUID);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(connected) {
+            dataToSendToCompanion.data.add(new CMinecraftMessageData(message));
         }
+
     }
 
     public static void sendInfo(String message){
-        if(connected)
-        try {
-            //System.out.println(message);
-            dos.writeBytes("<info>§"+message+"\n");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(connected){
+            dataToSendToCompanion.data.add(new CMinecraftMessageData(message));
         }
+
     }
 }

@@ -3,8 +3,8 @@
   "id": "modid",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "minecraft discord companion",
+  "description": "link the chat on a minecraft server to a discord channel via an external program",
   "authors": [
     "jSdCool"
   ],

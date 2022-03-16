@@ -1,15 +1,18 @@
 package com.discordcomp;
 
 
+import net.jsdcool.discompnet.CComandList;
 import net.jsdcool.discompnet.CDiscordMessageData;
 import net.jsdcool.discompnet.CompanionData;
 import net.minecraft.network.MessageType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CompanionConnection extends Thread{
 
@@ -25,7 +28,7 @@ public class CompanionConnection extends Thread{
                 Main.output.reset();
             }
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         try {
             Main.companionConnection.close();
@@ -46,6 +49,18 @@ public class CompanionConnection extends Thread{
                 chatMessage.append(discordName);
                 chatMessage.append(msg.message);
                 Main.pm.broadcast(chatMessage, MessageType.SYSTEM, Util.NIL_UUID);
+            }
+            if(data.data.get(i) instanceof CComandList){
+                List<ServerPlayerEntity> players =Main.pm.getPlayerList();
+                if(players.size()==0){
+                    Main.sendMessage("no players are online right now");
+                }else{
+                    String playerList="";
+                    for(int j=0;j<players.size();j++){
+                        playerList+=players.get(i).getName().asString()+"\n";
+                    }
+                    Main.sendMessage(playerList);
+                }
             }
         }
     }

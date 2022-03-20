@@ -11,10 +11,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class CompanionConnection extends Thread{
 
@@ -103,6 +105,35 @@ public class CompanionConnection extends Thread{
                     player.networkHandler.disconnect(new LiteralText(kick.reason));
                     Main.sendMessage("kicked "+kick.name+": "+kick.reason);
                     System.out.println("kicked "+kick.name+": "+kick.reason);
+                }else{
+                    Main.sendMessage("player not found");
+                }
+            }
+
+            if(data.data.get(i) instanceof  CGamemodeCommand gamemode){
+                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),gamemode.name)>-1) {
+                    ServerPlayerEntity player = Main.pm.getPlayer(gamemode.name);
+                    GameMode mode=GameMode.DEFAULT;
+                    switch(gamemode.gameMode){
+                        case "creative":
+                            mode=GameMode.CREATIVE;
+                            break;
+                        case "survival":
+                            mode=GameMode.SURVIVAL;
+                            break;
+                        case "adventure":
+                            mode=GameMode.ADVENTURE;
+                            break;
+                        case "spectator":
+                            mode=GameMode.SPECTATOR;
+                            break;
+                        default:
+                            Main.sendMessage("invalid gamemode");
+                            continue;
+                    }
+                    player.changeGameMode(mode);
+                    Main.sendMessage("gamemode updated");
+                    player.sendMessage(new LiteralText("gamemode updated"),MessageType.GAME_INFO, Util.NIL_UUID);
                 }else{
                     Main.sendMessage("player not found");
                 }

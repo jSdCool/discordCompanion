@@ -95,6 +95,19 @@ public class CompanionConnection extends Thread{
                 }
             }
 
+            if(data.data.get(i) instanceof  CKickCommand kick){
+                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),kick.name)>-1) {
+                    ServerPlayerEntity player = Main.pm.getPlayer(kick.name);
+                    if(kick.reason.equals(""))
+                        kick.reason="kicked by an operator from discord";
+                    player.networkHandler.disconnect(new LiteralText(kick.reason));
+                    Main.sendMessage("kicked "+kick.name+": "+kick.reason);
+                    System.out.println("kicked "+kick.name+": "+kick.reason);
+                }else{
+                    Main.sendMessage("player not found");
+                }
+            }
+
         }
     }
 

@@ -1,10 +1,7 @@
 package com.discordcomp;
 
 
-import net.jsdcool.discompnet.CAuthResponce;
-import net.jsdcool.discompnet.CComandList;
-import net.jsdcool.discompnet.CDiscordMessageData;
-import net.jsdcool.discompnet.CompanionData;
+import net.jsdcool.discompnet.*;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,6 +12,7 @@ import net.minecraft.util.Util;
 import com.mojang.brigadier.context.CommandContext;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class CompanionConnection extends Thread{
@@ -39,6 +37,7 @@ public class CompanionConnection extends Thread{
             e.printStackTrace();
         }
         Main.connected=false;
+        System.out.println("disconnected from companion");
     }
 
     void processInputData(CompanionData data){
@@ -74,6 +73,16 @@ public class CompanionConnection extends Thread{
                     context.getSource().sendError(new LiteralText("fail: "+response.reason));
                 }
                 Main.commandReqs.remove(response.reqnum);
+            }
+            if(data.data.get(i) instanceof CTeleportCommand tp){
+
+                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),tp.name)>-1) {
+                    ServerPlayerEntity player = Main.pm.getPlayer(tp.name);
+                    player.setPos(tp.x, tp.y, tp.z);
+                    Main.sendMessage("teleported player");
+                }else{
+                    Main.sendMessage("player not found");
+                }
             }
         }
     }

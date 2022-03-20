@@ -191,10 +191,4 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
 
     }
 
-    public static void sendInfo(String message){
-        if(connected){
-            dataToSendToCompanion.data.add(new CMinecraftMessageData(message));
-        }
-
-    }
 }

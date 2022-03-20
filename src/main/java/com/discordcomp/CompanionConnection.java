@@ -10,6 +10,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.util.math.Vec3d;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -84,6 +85,16 @@ public class CompanionConnection extends Thread{
                     Main.sendMessage("player not found");
                 }
             }
+            if(data.data.get(i) instanceof  CPlayerPositionCommand pos){
+                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),pos.name)>-1) {
+                    ServerPlayerEntity player = Main.pm.getPlayer(pos.name);
+                    Vec3d cords = player.getPos();
+                    Main.sendMessage(pos.name+": "+cords.x+" "+cords.y+" "+cords.z);
+                }else{
+                    Main.sendMessage("player not found");
+                }
+            }
+
         }
     }
 

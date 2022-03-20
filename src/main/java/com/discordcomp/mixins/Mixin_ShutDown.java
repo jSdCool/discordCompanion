@@ -15,11 +15,13 @@ import java.io.IOException;
 public class Mixin_ShutDown {
     @Inject(method = "shutdown", at =@At("HEAD"),remap = true )
     private void shutdown(CallbackInfo ci){
-        Main.dataToSendToCompanion.data.add(new CShutdownData());
-        try {
-            Main.companionConnection.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(Main.connected) {
+            Main.dataToSendToCompanion.data.add(new CShutdownData());
+            try {
+                Main.companionConnection.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

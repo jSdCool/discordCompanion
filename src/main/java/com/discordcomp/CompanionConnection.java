@@ -1,15 +1,18 @@
 package com.discordcomp;
 
 
+import net.jsdcool.discompnet.CAuthResponce;
 import net.jsdcool.discompnet.CComandList;
 import net.jsdcool.discompnet.CDiscordMessageData;
 import net.jsdcool.discompnet.CompanionData;
 import net.minecraft.network.MessageType;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
+import com.mojang.brigadier.context.CommandContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,6 +64,16 @@ public class CompanionConnection extends Thread{
                     }
                     Main.sendMessage(playerList);
                 }
+            }
+
+            if(data.data.get(i) instanceof CAuthResponce response){
+                CommandContext<ServerCommandSource> context =Main.commandReqs.get(response.reqnum);
+                if(response.success){
+                    context.getSource().sendFeedback(new LiteralText("success"), true);
+                }else{
+                    context.getSource().sendError(new LiteralText("fail: "+response.reason));
+                }
+                Main.commandReqs.remove(response.reqnum);
             }
         }
     }

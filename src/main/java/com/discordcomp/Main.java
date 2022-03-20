@@ -53,19 +53,19 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             dispatcher.register(literal("discordCompanion").requires(source -> source.hasPermissionLevel(3))
                     .then(literal("reconnect").executes(context -> {
-                        //if(!connected) {
+                        if(!connected) {
                             context.getSource().sendFeedback(new LiteralText("reconnecting"), true);
                             System.out.println("reconnecting to companion");
-                            if(!connected) {
+                            //if(!connected) {
                                 if (connectToCompanion()) {
                                     context.getSource().sendFeedback(new LiteralText("connected"), true);
                                     connected = true;
                                 } else {
                                     context.getSource().sendError(new LiteralText("connection failed"));
                                 }
-                            } else{
-                                context.getSource().sendError(new LiteralText("companion already connected"));
-                            }
+                        }else{
+                            context.getSource().sendError(new LiteralText("companion already connected"));
+                        }
 
                         return 1;
                     }))
@@ -178,6 +178,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                 connected=false;
                 try{
                     companionConnection.close();
+                    LOGGER.info("companion disconnected");
                 }catch (IOException i){ }
             }
         }

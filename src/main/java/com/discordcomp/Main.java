@@ -124,8 +124,9 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                 cfs = new Scanner(config);
             } catch (Throwable e) {
                 try {
+                    new File("config\\").mkdir();
                     FileWriter mr = new FileWriter("config\\discorncompanion.cfg");
-                    mr.write("#companion ip=\n#companion port=15643");
+                    mr.write("#companion ip=localhost\n#companion port=15643");
                     mr.close();
                     System.out.println("config file created.");
 

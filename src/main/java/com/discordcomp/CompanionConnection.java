@@ -2,6 +2,7 @@ package com.discordcomp;
 
 
 import net.jsdcool.discompnet.*;
+import net.minecraft.MinecraftVersion;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -137,6 +138,10 @@ public class CompanionConnection extends Thread{
                 }else{
                     Main.sendMessage("player not found");
                 }
+            }
+
+            if(data.data.get(i) instanceof  CVersionCommand){
+                Main.sendMessage("mod version: "+Main.version+"\ngame version: "+ MinecraftVersion.CURRENT.getName());
             }
 
         }

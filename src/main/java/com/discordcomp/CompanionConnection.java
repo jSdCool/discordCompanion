@@ -63,7 +63,7 @@ public class CompanionConnection extends Thread{
                 }else{
                     String playerList="";
                     for(int j=0;j<players.size();j++){
-                        playerList+=players.get(i).getName().asString()+"\n";
+                        playerList+=players.get(j).getName().asString()+"\n";
                     }
                     Main.sendMessage(playerList);
                 }
@@ -80,7 +80,7 @@ public class CompanionConnection extends Thread{
             }
             if(data.data.get(i) instanceof CTeleportCommand tp){
 
-                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),tp.name)>-1) {
+                if(Main.pm.getPlayerNames().length>0&&hasPlayer(tp.name)) {
                     ServerPlayerEntity player = Main.pm.getPlayer(tp.name);
                     player.setPos(tp.x, tp.y, tp.z);
                     Main.sendMessage("teleported player");
@@ -89,7 +89,7 @@ public class CompanionConnection extends Thread{
                 }
             }
             if(data.data.get(i) instanceof  CPlayerPositionCommand pos){
-                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),pos.name)>-1) {
+                if(Main.pm.getPlayerNames().length>0&&hasPlayer(pos.name)) {
                     ServerPlayerEntity player = Main.pm.getPlayer(pos.name);
                     Vec3d cords = player.getPos();
                     Main.sendMessage(pos.name+": "+cords.x+" "+cords.y+" "+cords.z);
@@ -99,7 +99,7 @@ public class CompanionConnection extends Thread{
             }
 
             if(data.data.get(i) instanceof  CKickCommand kick){
-                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),kick.name)>-1) {
+                if(Main.pm.getPlayerNames().length>0&&hasPlayer(kick.name)) {
                     ServerPlayerEntity player = Main.pm.getPlayer(kick.name);
                     if(kick.reason.equals(""))
                         kick.reason="kicked by an operator from discord";
@@ -112,7 +112,7 @@ public class CompanionConnection extends Thread{
             }
 
             if(data.data.get(i) instanceof  CGamemodeCommand gamemode){
-                if(Main.pm.getPlayerNames().length>0&&Arrays.binarySearch(Main.pm.getPlayerNames(),gamemode.name)>-1) {
+                if(Main.pm.getPlayerNames().length>0&&hasPlayer(gamemode.name)) {
                     ServerPlayerEntity player = Main.pm.getPlayer(gamemode.name);
                     GameMode mode=GameMode.DEFAULT;
                     switch(gamemode.gameMode){
@@ -145,6 +145,16 @@ public class CompanionConnection extends Thread{
             }
 
         }
+    }
+
+    boolean hasPlayer(String name){
+        List<ServerPlayerEntity> players =Main.pm.getPlayerList();
+        for(int i=0;i<players.size();i++){
+            if(players.get(i).getName().asString().equals(name)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

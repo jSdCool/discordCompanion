@@ -1,4 +1,4 @@
-
+@echo off
 goto check_Permissions
 
 :check_Permissions
@@ -13,7 +13,7 @@ goto check_Permissions
 
 :compile 
 echo Success: Administrative permissions confirmed.
-cd "C:\Users\nisky\Desktop\random things\dischat minecraft mod\disChat"
+cd "C:\Users\nisky\Desktop\random things\discordCompanion"
 gradlew build
 pause
 goto :end

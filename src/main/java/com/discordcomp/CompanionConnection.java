@@ -3,15 +3,17 @@ package com.discordcomp;
 
 import net.jsdcool.discompnet.*;
 import net.minecraft.MinecraftVersion;
-import net.minecraft.network.MessageType;
+//import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.BaseText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.util.Util;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.world.GameMode;
 
 import java.io.IOException;
@@ -47,14 +49,14 @@ public class CompanionConnection extends Thread{
     void processInputData(CompanionData data){
         for(int i=0;i<data.data.size();i++){
             if(data.data.get(i) instanceof CDiscordMessageData msg){
-                BaseText chatMessage=new LiteralText(""),discordText =new LiteralText("Discord ");
+                MutableText chatMessage=MutableText.of(new LiteralTextContent("")) ,discordText =MutableText.of(new LiteralTextContent("Discord "));
                 discordText.setStyle(chatMessage.getStyle().withColor(5592575));
                 chatMessage.append(discordText);
-                BaseText discordName=new LiteralText("["+msg.displayName+"] ");
-                discordName.setStyle(discordName.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new LiteralText("Discord name: "+msg.name+"\nid: "+msg.id))).withColor(msg.nameColor));
+                MutableText discordName=MutableText.of(new LiteralTextContent(("["+msg.displayName+"] ")));
+                discordName.setStyle(discordName.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,MutableText.of(new LiteralTextContent(("Discord name: "+msg.name+"\nid: "+msg.id))))).withColor(msg.nameColor));
                 chatMessage.append(discordName);
                 chatMessage.append(msg.message);
-                Main.pm.broadcast(chatMessage, MessageType.SYSTEM, Util.NIL_UUID);
+                Main.pm.broadcast(chatMessage, MessageType.CHAT);
             }
             if(data.data.get(i) instanceof CComandList){
                 List<ServerPlayerEntity> players =Main.pm.getPlayerList();
@@ -63,7 +65,7 @@ public class CompanionConnection extends Thread{
                 }else{
                     String playerList="";
                     for(int j=0;j<players.size();j++){
-                        playerList+=players.get(j).getName().asString()+"\n";
+                        playerList+=players.get(j).getName().getString()+"\n";
                     }
                     Main.sendMessage(playerList);
                 }
@@ -72,9 +74,9 @@ public class CompanionConnection extends Thread{
             if(data.data.get(i) instanceof CAuthResponce response){
                 CommandContext<ServerCommandSource> context =Main.commandReqs.get(response.reqnum);
                 if(response.success){
-                    context.getSource().sendFeedback(new LiteralText("success"), true);
+                    context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("success")), true);
                 }else{
-                    context.getSource().sendError(new LiteralText("fail: "+response.reason));
+                    context.getSource().sendError(MutableText.of(new LiteralTextContent(("fail: "+response.reason))));
                 }
                 Main.commandReqs.remove(response.reqnum);
             }
@@ -103,7 +105,7 @@ public class CompanionConnection extends Thread{
                     ServerPlayerEntity player = Main.pm.getPlayer(kick.name);
                     if(kick.reason.equals(""))
                         kick.reason="kicked by an operator from discord";
-                    player.networkHandler.disconnect(new LiteralText(kick.reason));
+                    player.networkHandler.disconnect(MutableText.of(new LiteralTextContent((kick.reason))));
                     Main.sendMessage("kicked "+kick.name+": "+kick.reason);
                     System.out.println("kicked "+kick.name+": "+kick.reason);
                 }else{
@@ -134,7 +136,7 @@ public class CompanionConnection extends Thread{
                     }
                     player.changeGameMode(mode);
                     Main.sendMessage("gamemode updated");
-                    player.sendMessage(new LiteralText("gamemode updated"),MessageType.GAME_INFO, Util.NIL_UUID);
+                    player.sendMessage(MutableText.of(new LiteralTextContent("gamemode updated")),MessageType.CHAT);
                 }else{
                     Main.sendMessage("player not found");
                 }
@@ -150,7 +152,7 @@ public class CompanionConnection extends Thread{
     boolean hasPlayer(String name){
         List<ServerPlayerEntity> players =Main.pm.getPlayerList();
         for(int i=0;i<players.size();i++){
-            if(players.get(i).getName().asString().equals(name)){
+            if(players.get(i).getName().getString().equals(name)){
                 return true;
             }
         }

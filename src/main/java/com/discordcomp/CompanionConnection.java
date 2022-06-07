@@ -3,23 +3,18 @@ package com.discordcomp;
 
 import net.jsdcool.discompnet.*;
 import net.minecraft.MinecraftVersion;
-//import net.minecraft.network.MessageType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralTextContent;
-import net.minecraft.util.Util;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.world.GameMode;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class CompanionConnection extends Thread{
 

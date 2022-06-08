@@ -3,13 +3,13 @@ package com.discordcomp;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,21 +50,21 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
 
         ServerTickEvents.END_SERVER_TICK.register( this);
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, commandRegistryAccess,registrationEnvironment) -> {
             dispatcher.register(literal("discordCompanion").requires(source -> source.hasPermissionLevel(3))
                     .then(literal("reconnect").executes(context -> {
                         if(!connected) {
-                            context.getSource().sendFeedback(new LiteralText("reconnecting"), true);
+                            context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("reconnecting")), true);
                             System.out.println("reconnecting to companion");
                             //if(!connected) {
                                 if (connectToCompanion()) {
-                                    context.getSource().sendFeedback(new LiteralText("connected"), true);
+                                    context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("connected")), true);
                                     connected = true;
                                 } else {
-                                    context.getSource().sendError(new LiteralText("connection failed"));
+                                    context.getSource().sendError(MutableText.of(new LiteralTextContent("connection failed")));
                                 }
                         }else{
-                            context.getSource().sendError(new LiteralText("companion already connected"));
+                            context.getSource().sendError(MutableText.of(new LiteralTextContent("companion already connected")));
                         }
 
                         return 1;
@@ -77,7 +77,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                                     commandReqs.put(id, context);
                                     dataToSendToCompanion.data.add(new CAuthRequest(id, id));
                                 }else{
-                                    context.getSource().sendError(new LiteralText("error: not connected to companion"));
+                                    context.getSource().sendError(MutableText.of(new LiteralTextContent("error: not connected to companion")));
                                     return 0;
                                 }
 
@@ -91,7 +91,7 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
                                             commandReqs.put("un"+id, context);
                                             dataToSendToCompanion.data.add(new CUnAuthRequest(id, "un"+id));
                                         }else{
-                                            context.getSource().sendError(new LiteralText("error: not connected to companion"));
+                                            context.getSource().sendError(MutableText.of(new LiteralTextContent("error: not connected to companion")));
                                             return 0;
                                         }
 

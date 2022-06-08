@@ -22,7 +22,6 @@ import java.util.Scanner;
 import net.jsdcool.discompnet.*;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class Main implements ModInitializer, ServerTickEvents.EndTick{

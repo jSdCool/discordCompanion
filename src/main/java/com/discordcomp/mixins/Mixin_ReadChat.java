@@ -24,7 +24,7 @@ Mixin_ReadChat {
 
    @Inject(method = "broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/util/registry/RegistryKey;)V",at =@At("HEAD"),remap = true )
     private void broadcastChatMessage(Text text, RegistryKey<MessageType> typeKey, CallbackInfo info){
-       System.out.println("message detected by 1st inject in read chat message: "+text.getString());
+       //System.out.println("message detected by 1st inject in read chat message: "+text.getString());
 
            if (text.getString().length() > 9 && text.getString().startsWith("Discord ["))
                return;
@@ -39,7 +39,8 @@ Mixin_ReadChat {
     @Inject(method = "broadcast(Lnet/minecraft/network/message/SignedMessage;Ljava/util/function/Function;Lnet/minecraft/network/message/MessageSender;Lnet/minecraft/util/registry/RegistryKey;)V",at=@At("HEAD"),remap = true)
     private void broadcastChatMessage (SignedMessage message, Function<ServerPlayerEntity,SignedMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey, CallbackInfo info){
      String msg=message.getContent().getString();
-     System.out.println("message detected by 2nd inject in read chat message: "+msg);
+     //System.out.println("message detected by 2nd inject in read chat message: "+msg);
+        Main.sendMessage(message.getContent().getString());
     }
 
 }

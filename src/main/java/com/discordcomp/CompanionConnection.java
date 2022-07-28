@@ -51,7 +51,7 @@ public class CompanionConnection extends Thread{
                 discordName.setStyle(discordName.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,MutableText.of(new LiteralTextContent(("Discord name: "+msg.name+"\nid: "+msg.id))))).withColor(msg.nameColor));
                 chatMessage.append(discordName);
                 chatMessage.append(msg.message);
-                Main.pm.broadcast(chatMessage, MessageType.SYSTEM);
+                Main.pm.broadcast(chatMessage, false);
             }
             if(data.data.get(i) instanceof CComandList){
                 List<ServerPlayerEntity> players =Main.pm.getPlayerList();
@@ -131,7 +131,7 @@ public class CompanionConnection extends Thread{
                     }
                     player.changeGameMode(mode);
                     Main.sendMessage("gamemode updated");
-                    player.sendMessage(MutableText.of(new LiteralTextContent("gamemode updated")),MessageType.CHAT);
+                    player.sendMessage(MutableText.of(new LiteralTextContent("gamemode updated")),false);
                 }else{
                     Main.sendMessage("player not found");
                 }

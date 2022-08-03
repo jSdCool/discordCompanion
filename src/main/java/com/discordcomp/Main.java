@@ -26,7 +26,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class Main implements ModInitializer, ServerTickEvents.EndTick{
     public static final Logger LOGGER = LogManager.getLogger("discord companion");
-    static String ip,version ="1.2.0";
+    static String ip,version ="1.2.1";
     static int port;
     public static Socket companionConnection;
     public static ObjectOutputStream output;

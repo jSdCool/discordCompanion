@@ -26,7 +26,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class Main implements ModInitializer, ServerTickEvents.EndTick{
     public static final Logger LOGGER = LogManager.getLogger("discord companion");
-    static String ip,version ="1.2.4";
+    static String ip,version ="1.2.6";
     static int port;
     public static Socket companionConnection;
     public static ObjectOutputStream output;
@@ -53,11 +53,11 @@ public class Main implements ModInitializer, ServerTickEvents.EndTick{
             dispatcher.register(literal("discordCompanion").requires(source -> source.hasPermissionLevel(3))
                     .then(literal("reconnect").executes(context -> {
                         if(!connected) {
-                            context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("reconnecting")), true);
+                            context.getSource().sendFeedback(() -> MutableText.of(new LiteralTextContent("reconnecting")), true);
                             System.out.println("reconnecting to companion");
                             //if(!connected) {
                                 if (connectToCompanion()) {
-                                    context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("connected")), true);
+                                    context.getSource().sendFeedback(() -> MutableText.of(new LiteralTextContent("connected")), true);
                                     connected = true;
                                 } else {
                                     context.getSource().sendError(MutableText.of(new LiteralTextContent("connection failed")));

@@ -69,7 +69,7 @@ public class CompanionConnection extends Thread{
             if(data.data.get(i) instanceof CAuthResponce response){
                 CommandContext<ServerCommandSource> context =Main.commandReqs.get(response.reqnum);
                 if(response.success){
-                    context.getSource().sendFeedback(MutableText.of(new LiteralTextContent("success")), true);
+                    context.getSource().sendFeedback(() ->MutableText.of(new LiteralTextContent("success")), true);
                 }else{
                     context.getSource().sendError(MutableText.of(new LiteralTextContent(("fail: "+response.reason))));
                 }
@@ -79,7 +79,8 @@ public class CompanionConnection extends Thread{
 
                 if(Main.pm.getPlayerNames().length>0&&hasPlayer(tp.name)) {
                     ServerPlayerEntity player = Main.pm.getPlayer(tp.name);
-                    player.setPos(tp.x, tp.y, tp.z);
+
+                    player.teleport(player.getServerWorld(),tp.x, tp.y, tp.z,player.getYaw(),player.getPitch());
                     Main.sendMessage("teleported player");
                 }else{
                     Main.sendMessage("player not found");
